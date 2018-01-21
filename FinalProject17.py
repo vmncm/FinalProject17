@@ -13,8 +13,8 @@ class Object():
 
 #objects
 """shard = Object("A red, glass-like shard", True, door, 8)
-key1
-key2
+key1 =
+key2 =
 letter = Object("It says: ''", True)
 matches = Object("Regular coated matches", True, desk, 1)
 """
@@ -118,7 +118,7 @@ YOU ESCAPED!
 
 
 #functions
-def type(str):
+def type_slow(str):
     """prints words slowly"""
     for letter in str:
         sys.stdout.write(letter)
@@ -127,29 +127,29 @@ def type(str):
 
 def invalid():
     """used to respond to invalid commands"""
-    type(random.choice(responses))
+    type_slow(random.choice(responses))
     print("\n")
 
 def invalid2():
     """used to respond to invalid commands"""
-    type(random.choice(responses2))
+    type_slow(random.choice(responses2))
     print("\n")
 
 def front():
     """provides description of the front wall"""
-    type(frontwall)
+    type_slow(frontwall)
 
 def back():
     """provides description of the back wall"""
-    type(backwall)
+    type_slow(backwall)
 
 def left():
     """provides description of the left wall"""
-    type(leftwall)
+    type_slow(leftwall)
 
 def right():
     """provides description of the right wall"""
-    type(rightwall)
+    type_slow(rightwall)
 
 #wall value indicates direction (in reference to front wall): front = 1, left = 2, back = 3, right = 4
 def turn(direction, start):
@@ -197,7 +197,7 @@ def use(obj):
 
 def examine(obj):
     """provides description of object"""
-    type(obj.desc)
+    type_slow(obj.desc)
 
 def inventory():
     """prints inventory"""
@@ -260,15 +260,15 @@ while True:
         choice1 = input("> ")
 
 #game start/situation
-type("...\n.....\nThis is weird. Really weird. This place was supposed to be sealed off from your world.\n...Is something wrong with the curse?\nHow did you get here?\n")
-type("\nUmm...WHO ARE YOU?\n")
+type_slow("...\n.....\nThis is weird. Really weird. This place was supposed to be sealed off from your world.\n...Is something wrong with the curse?\nHow did you get here?\n")
+type_slow("\nUmm...WHO ARE YOU?\n")
 new_name = input("> ")
 if new_name.lower == "who are you":
-    type("\nI am...Actually, I'm not sure. I appeared when the curse did. Just pretend I'm some random narrator or something. \nNow, answer my question, you trespasser!\nWho are you?\n")
+    type_slow("\nI am...Actually, I'm not sure. I appeared when the curse did. Just pretend I'm some random narrator or something. \nNow, answer my question, you trespasser!\nWho are you?\n")
     new_name = input("> ")
-type(f"\nWell, {new_name}, get out. Or at least try to. I mean, it really shouldn't be that hard...\nThis whole place was designed by an amateur anyways. Compared to people with real experience, her code- \nI mean her curse skills are...subpar...\nBasically at the level of a high school junior. It gets the job done, though. Easy to escape, if you're not the cursed one.\nAbout that guy...Yeah...He didn't get out.\n")
-type("\nYeah... you're probably confused. That didn't explain anything...Basically, this place was some scientist's home. \nHe got way too close to discovering the secret for immortality, so someone had to step in. \nTo protect the universe, a curse was cast to put the room in a different dimension. \nThe curse is anchored by 8 gem shards, one of which is actually next to where you're standing. \nI'll add that to your inventory right now.\nThe only way back home is through the front door.\nThe key for the door is the full gem, which means you need all 8 shards.\n\nOkay, it's time for you to get out. I'll help where I can, but if you type <help>, you can get more information.")
-type("\nLet's get started:\n")
+type_slow(f"\nWell, {new_name}, get out. Or at least try to. I mean, it really shouldn't be that hard...\nThis whole place was designed by an amateur anyways. Compared to people with real experience, her code- \nI mean her curse skills are...subpar...\nBasically at the level of a high school junior. It gets the job done, though. Easy to escape, if you're not the cursed one.\nAbout that guy...Yeah...He didn't get out.\n")
+type_slow("\nYeah... you're probably confused. That didn't explain anything...Basically, this place was some scientist's home. \nHe got way too close to discovering the secret for immortality, so someone had to step in. \nTo protect the universe, a curse was cast to put the room in a different dimension. \nThe curse is anchored by 8 gem shards, one of which is actually next to where you're standing. \nI'll add that to your inventory right now.\nThe only way back home is through the front door.\nThe key for the door is the full gem, which means you need all 8 shards.\n\nOkay, it's time for you to get out. I'll help where I can, but if you type <help>, you can get more information.")
+type_slow("\nLet's get started:\n")
 #end of super long exposition
 
 #start with player facing front of room
@@ -280,5 +280,6 @@ game = command()
 while True:
     if type(game) == int:
         wall = game
+        game = command()
     else:
         game = command()
