@@ -2,6 +2,7 @@
 import random, sys, time, inspect
 
 #classes
+#this class is for all types of objects that the player can interact with throughout the game
 class Object():
     def __init__(self, description, take, place, number):
         """new object"""
@@ -13,15 +14,16 @@ class Object():
 
 #objects
 shard = Object("A red, glass-like shard", True, "door", 8)
-gold_key = Object("A small gold key", True, "chest", 1)
-silver_key = Object("A small silver key", True, "cabinet", 1)
-matches = Object("Regular coated matches", True, "desk", 1)
+gold = Object("A small gold key", True, "chest", 1)
+silver = Object("A small silver key", True, "shelf", 1)
+matches = Object("Regular coated matches", True, "candle", 1)
 meterstick = Object("Wooden meterstick", True, "bed", 0)
-cup = Object("A ceramic cup. When you pick it up, you see a SHARD inside.", False)
-bowl = Object("A ceramic bowl. When you pick it up, you see it is empty.", False)
-vase = Object("A ceramic vase. When you pick it up, you see a GOLD KEY inside.", False)
-mug = Object("A ceramic mug. When you pick it up, you see it is empty.", False)
-book = Object("A bright red book. You open it and see that a hole has been cut into the pages. In the hole is a SHARD.", False)
+cup = Object("A ceramic cup. When you pick it up, you see a SHARD inside.", False, "N/A", 0)
+bowl = Object("A ceramic bowl. When you pick it up, you see it is empty.", False, "N/A", 0)
+vase = Object("A ceramic vase. When you pick it up, you see a GOLD KEY inside.", False, "N/A", 0)
+mug = Object("A ceramic mug. When you pick it up, you see it is empty.", False, "N/A", 0)
+book = Object("A bright red book. You open it and see that a hole has been cut into the pages. In the hole is a SHARD.", False, "N/A", 0)
+letters = Object("The first letter says: Jan. 2, 1902\nNathan,\nThe research is complete! I am beginning the testing phase tomorrow. \nIf it works, it will be the greatest possible birthday present.\nThe second letter (it's more of a memo) says: Don't forget your password is your birthday.", False, "N/A", 0)
 
 #lists and dictionaries
 #for when the command input is completely invalid
@@ -30,13 +32,13 @@ inventory = {"shard" : 1}
 #for when the command is valid, but it is not the intended use/not allowed (such as taking the skeleton or taking the door)
 responses2 = ["You really think you can do that?" , "Sorry, you can't do that." , "No." , "Do something else." , "You better not.", "I really don't think that'll work."]
 #objects in each location
-inv_bed = {"shard": 1}
-inv_nightstand = {"shard": 1}
-inv_shelf = {"shard": 1}
+#inv_bed = {"decoy": 1}
+inv_nightstand = {"matches": 30, "silver" : 1}
+#inv_shelf = {"decoy": 1}
 inv_bookshelf = {"meterstick": 1}
 inv_desk = {"shard": 1}
-inv_cabinet = {"gold_key": 1}
-inv_chest = {"shard": 1}
+inv_cabinet = {"decoy": 1}
+inv_chest = {"decoy": 1}
 
 #long strings & other variables
 commands = """take <object> : takes object and puts it in the inventory, if possible
@@ -95,7 +97,14 @@ Remember? This room is in a separate universe, with nothing else in it.
 location = "none"
 
 #writing descriptions for examine function
-shelf = """You approach the shelf.
+shelf_p1 = """You approach the shelf. There is a jar that has a label reading 'MCMII'.
+Next to the jar is a silver box.
+"""
+
+shelf_p2 = """The box is locked.
+"""
+
+shelf_p3 = """The box is unlocked. You see a SHARD inside.
 """
 
 door = """You approach the door. In the center of the door, there is a small carving in the wood.
@@ -106,34 +115,44 @@ cabinet = """You approach the cabinet, which is full of ceramics. On the top she
 On the middle shelf, there is a MUG and a BOWL. On the bottom shelf, there is a VASE.
 """
 
-chest = """You approach the chest.
+chest_p1 = """You approach the chest.
 """
 
 chest_p2 = "There is a golden lock holding it shut."
 
-chest_p3 = """It is open. Inside, you see piles of clothes. Digging through the piles, you find a suitCASE.
-It has a 4-digit number lock.
+#may or may not recode in order to make the suitcase happen, but it is cutting close on time
+#chest_p3 = """It is open. Inside, you see piles of clothes. Digging through the piles, you find a suitCASE.
+#It has a 4-digit number lock.
+#"""
+
+chest_p3 = """It is open. Inside, you see piles of clothes. Digging through the piles, you find a SHARD.
 """
 
-bed = """You approach the bed.
+bed_p1 = """You approach the bed.
 """
 
-bed_2 = """Under the bed, you see a red glimmer. It is a SHARD, but you can't reach it."""
+bed_p2 = """Under the bed, you see a red glimmer. It is a SHARD, but you can't reach it."""
 
-nightstand = """You approach the nightstand. On top, there is an unlit candle, a box of MATCHES, and a BOX.
+nightstand_p1 = """You approach the nightstand. On top, there is an unlit candle, a box of MATCHES, and a BOX.
 """
 
-desk = """You approach the desk. There are various papers documenting the scientist's experiments.
+nightstand_p2 = """There is a SILVER KEY on the stand.
+"""
+
+desk_p1 = """You approach the desk. There are various papers documenting the scientist's experiments.
 The skeleton of the scientist is sitting on the chair, as if he is reviewing his work.
-On top of the desk, there is a letter. It says: ''
+On top of the desk, there are LETTERS.
 """
 
 desk_p2 = """In the skeleton's eye, there is a red glimmer. You see that it is a SHARD.
 """
 
 
-bookshelf = """You approach the bookshelf. It is packed with books, almost all of which are brown or black.
+bookshelf_p1 = """You approach the bookshelf. It is packed with books, almost all of which are brown or black.
 One BOOK in the center catches your eye. It is a vibrant red color.
+"""
+
+bookshelf_p2 = """Leaning on the side of the bookshelf is a METERSTICK.
 """
 
 end = """You take all eight shards and hold them in your hand.
@@ -203,25 +222,43 @@ def turn(direction, start):
 #modifies inventory, as well
 def take(obj):
     """take object, if possible"""
-    if obj == location:
-        if obj.keep == True:
-            if obj in inventory:
-                inventory[obj] += 1
-            else:
-                inventory[obj] = 1
+    y = {"bookshelf" : inv_bookshelf , "bed" : inv_bed , "shelf" : inv_shelf , "cabinet" : inv_cabinet , "nightstand" : inv_nightstand , "desk" : inv_desk, "chest" : inv_chest}
+    z = {"shard" : shard , "matches" : matches , "gold" : gold , "silver" : silver , "meterstick" : meterstick}
+    if z[obj].place == location and z[obj].keep == True and obj in y[location] and y[location][obj] >= 1:
+        if obj in inventory:
+            inventory[obj] += 1
+        elif obj == "gold" :
+            inventory["gold key"] = 1
         else:
-            invalid2()
+            inventory[obj] = 1
+        x = y[obj]
+        inv_[x] -= 1
+        return f"{obj}2"
     else:
         invalid2()
 
 #uses object only if it is in the inventory, if the current location is the right place to use it, and if the player has enough of the object to use
 #modifies inventory
 #after using the 8 shards, it should return "end", which will be recognized by final gameplay loop in order to end the game
+#dictionary x makes it easier to call aspects under __init__
 def use(obj):
     """uses object"""
-    if str(obj) in inventory and inventory[obj] >= obj.usenum:
-        if obj.place == location:
-            inventory[obj] -= obj.usenum
+    z = {"shard" : shard , "matches" : matches , "gold key" : gold , "silver key" : silver , "meterstick" : meterstick}
+    if obj in inventory :
+        if inventory[obj] < z[obj].usenum and z[obj].place == location :
+            type_slow("You don't have enough.")
+        elif inventory[obj] >= z[obj].usenum and [obj].place == location :
+            if obj == "meterstick" :
+                type_slow("You slide the meterstick under the bed, reaching for the SHARD.\nYou manage to pull it into arm's reach.")
+            elif obj == "matches" :
+                type_slow("You light the candle. As it melts, you see a SHARD inside the melted wax.\n(You can grab it without hurting yourself, don't worry.)")
+            elif obj == "gold" :
+                type_slow("You unlock the chest. Inside, you see a suitCASE.")
+            elif obj == "silver" :
+                type_slow("You unlock the box. Inside, you see a SHARD.")
+            else:
+                type_slow("...")
+            inventory[obj] -= z[obj].usenum
         else:
             invalid2()
     else:
@@ -230,14 +267,17 @@ def use(obj):
         x = "end"
         return x
     else:
-        x = "continue"
+        x = obj
         return x
 
 #function used to approach location or look closely at objects
 def examine(obj):
     """provides description of object or brings character closer to object"""
-    if inspect.isclass(obj) == True:
+    z = {"shard" : shard , "matches" : matches , "gold key" : gold , "silver key" : silver , "meterstick" : meterstick, "cup" : cup , "bowl" : bowl , "vase" : vase , "mug" : mug , "letters" : letters, "book" : book}
+    if inspect.isclass(z[obj]) == True:
         type_slow(obj.desc)
+        obj = f"{obj}1"
+        return obj
     elif obj == "door" :
         type_slow(door)
     elif obj == "shelf" :
@@ -246,10 +286,6 @@ def examine(obj):
         type_slow(cabinet)
     elif obj == "chest" :
         type_slow(chest)
-        if gold_key in inventory and inventory[gold_key] == 0:
-            type_slow(chest_p3)
-        else:
-            type_slow(chest_p2)
     elif obj == "bed" :
         type_slow(bed)
     elif obj == "nightstand" :
@@ -340,6 +376,12 @@ type_slow(frontwall)
 #setup for the following while loop
 wall = 1
 game = command()
+chest = chest_p1 + chest_p2
+bed = bed_p1 + bed_p2
+shelf = shelf_p1 + shelf_p2
+desk = desk_p1 + desk_p2
+nightstand = nightstand_p1 + nightstand_p2
+bookshelf = bookshelf_p1 + bookshelf_p2
 
 #final gameplay loop
 #keeps asking user for input, allows variable, wall, to be used in and out of functions, avoids global variable issue
@@ -353,6 +395,27 @@ while True:
     elif game == "nightstand" or "bed" or "chest" or "door" or "bookshelf" or "shelf" or "desk" or "cabinet":
         location = game
         game = command()
+    elif game == "meterstick" :
+        inv_bed = {"shard" : 1}
+        bed = bed_p1
+    elif game == "gold" :
+        chest = chest_p1 + chest_p3
+        inv_chest["shard"] = 1
+    elif game == "silver" :
+        inv_shelf = {"shard" : 1}
+        shelf = shelf_p1 + shelf_p3
+    elif game == "matches" :
+        inv_nightstand["shard"] = 1
+    elif game == "book1" :
+        inv_bookshelf["shard"] = 1
+    elif game == "cup1" :
+        inv_cabinet["shard"] = 1
+    elif game == "vase1" :
+        inv_cabinet["gold"] = 1
+    elif game == "meterstick2" :
+        bookshelf = bookshelf_p1
+    elif game =="silver2" :
+        shelf = nightstand_p1
     elif game == "end" :
         break
     else:
@@ -360,4 +423,4 @@ while True:
 
 #previous loop only breaks when the "end" is returned by the command function, so it only reaches this line at the end of the game
 #"types" out the ending sequence (found at the top in "long strings and variables" section)
-slow_type(end)
+type_slow(end)
