@@ -25,14 +25,14 @@ vase = Object("A ceramic vase. When you pick it up, you see a GOLD KEY inside.\n
 mug = Object("A ceramic mug. When you pick it up, you see it is empty.\n", False, "N/A", 0)
 book = Object("A bright red book. You open it and see that a hole has been cut into the pages. In the hole is a SHARD.\n", False, "N/A", 0)
 #letters no longer necessary because I got rid of the suitcase that would require the code to save time
-#letters = Object("The first letter says: Jan. 2, 1902\nNathan,\nThe research is complete! I am beginning the testing phase tomorrow. \nIf it works, it will be the greatest possible birthday present.\nThe second letter (it's more of a memo) says: Don't forget your password is your birthday.\n", False, "N/A", 0)
+letters = Object("The first letter says: Jan. 2, 1902\nNathan,\nThe research is complete! I am beginning the testing phase tomorrow. \nI hope it works, it will be the greatest possible birthday present, saving your life.\nThe second letter (it's more of a memo) says: Don't forget your password is your birthday.\n", False, "N/A", 0)
 
 
 #lists and dictionaries
 #for when the command input is completely invalid
-responses = ["Sorry, I don't understand that.", "That just so happens to be outside of my skill set.", "Excuse me?", "Do something else.", "Huh?", "Dude, that's not an option.", "Can't do that, sorry.", "Yeah, I'll go right ahead and do that for you! Just kidding.", "No.", "You're not the boss of me. Ugh.", "Can you...just maybe...make some sense?", "Oops! Sorry, I don't know how to do that!", "Maybe I can do that in the next curse update."]
+responses = ["What does that even mean...", "I'm just gonna stare at you in confusion until you give a valid command.", "I have no idea what you want me to do.", "Sorry, I don't understand that.", "That just so happens to be outside of my skill set.", "Excuse me?", "Do something else.", "Huh?", "Dude, that's not an option.", "Can't do that, sorry.", "Yeah, I'll go right ahead and do that for you! Just kidding.", "No.", "You're not the boss of me. Ugh.", "Can you...just maybe...make some sense?", "Oops! Sorry, I don't know how to do that!", "Maybe I can do that in the next curse update."]
 #for when the command is valid, but it is not the intended use/not allowed (such as taking the skeleton or taking the door)
-responses2 = ["You really think you can do that?" , "Sorry, you can't do that." , "No." , "Do something else." , "You better not.", "I really don't think that'll work."]
+responses2 = ["You really think you can do that?" , "Sorry, you can't do that." , "No." , "Do something else." , "You better not.", "I really don't think that'll work.", "That's not allowed.", "Maybe you're on the right track, maybe not. I don't know.", "I can't help you with that, sorry.", "The rules of this room don't allow you to do that.", "Well, that didn't work."]
 
 inventory = {"shard" : 1}
 #objects in each location
@@ -232,19 +232,18 @@ def take(obj):
     y = {"bookshelf" : inv_bookshelf , "bed" : inv_bed , "shelf" : inv_shelf , "cabinet" : inv_cabinet , "nightstand" : inv_nightstand , "desk" : inv_desk, "chest" : inv_chest}
     z = {"shard" : shard , "matches" : matches , "gold" : gold , "silver" : silver , "meterstick" : meterstick}
     #global location
-    if location in y:
-        if z[obj].keep == True and obj in y[location] and y[location][obj] >= 1:
-            if obj in inventory:
-                inventory[obj] += 1
-            elif obj == "gold" :
-                inventory["gold key"] = 1
-            elif obj == "silver" :
-                inventory["silver key"] = 1
-            else:
-                inventory[obj] = 1
-            x = y[location]
-            x[obj] -= 1
-            return f"{obj}2"
+    if location in y and z[obj].keep == True and obj in y[location] and y[location][obj] >= 1:
+        if obj in inventory:
+            inventory[obj] += 1
+        elif obj == "gold" :
+            inventory["gold key"] = 1
+        elif obj == "silver" :
+            inventory["silver key"] = 1
+        else:
+            inventory[obj] = 1
+        x = y[location]
+        x[obj] -= 1
+        return f"{obj}2"
         #else:
         #    invalid2()
     else:
@@ -377,8 +376,8 @@ new_name = input("> ")
 if new_name.lower() == "who are you":
     type_slow("\nI am...Actually, I'm not sure. I appeared when the curse did. Just pretend I'm some random narrator or something. \nNow, answer my question, you trespasser!\nWho are you?\n")
     new_name = input("> ")
-type_slow(f"\nWell, {new_name}, get out. Or at least try to. I mean, it really shouldn't be that hard...\nThis whole place was designed by an amateur anyways. Compared to people with real experience, her code- \nI mean her curse skills are...subpar...\nBasically at the level of a high school junior. It gets the job done, though. Easy to escape, if you're not the cursed one.\nAbout that guy...Yeah...He didn't get out.\n")
-type_slow("\nYeah... you're probably confused. That didn't explain anything...Basically, this place was some scientist's home. \nHe got way too close to discovering the secret for immortality, so someone had to step in. \nTo protect the universe, a curse was cast to put the room in a different dimension. \nThe curse is anchored by 8 gem shards, one of which is actually next to where you're standing. \nI'll add that to your inventory right now.\nThe only way back home is through the front door.\nThe key for the door is the full gem, which means you need all 8 shards.\n\nOkay, it's time for you to get out. I'll help where I can, but if you type <help>, you can get more information.")
+type_slow(f"\nWell, {new_name}, get out. I mean, it really shouldn't be that hard...This whole place was designed by an amateur anyways. \nCompared to people with real experience, her code-I mean her curse skills are...subpar...\nBasically at the level of a high school junior. It gets the job done, though. Easy to escape, if you're not the cursed one.\nAbout that guy...Yeah...He didn't get out.\n")
+type_slow("\nBasically, this place was some scientist's home. \nHe got too close to discovering the secret for immortality, so someone had to step in. \nTo protect the universe, a curse was cast to put the room in a different dimension. \nThe curse is anchored by 8 gem shards, one of which is actually next to where you're standing. \n \nI'll add that to your inventory right now.\nThe only way back home is through the front door. The key for the door is the full gem, which means you need all 8 shards.\n\nOkay, it's time for you to get out. I'll help where I can, but if you type <help>, you can get more information.")
 type_slow("\nLet's get started:\n")
 #end of super long exposition
 
