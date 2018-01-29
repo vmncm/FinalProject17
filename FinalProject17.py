@@ -1,5 +1,6 @@
 #import modules
-import random, sys, time, inspect
+import random, sys, time
+
 
 #classes
 #this class is for all types of objects that the player can interact with throughout the game
@@ -13,32 +14,38 @@ class Object():
 
 
 #objects
-shard = Object("A red, glass-like shard", True, "door", 8)
-gold = Object("A small gold key", True, "chest", 1)
-silver = Object("A small silver key", True, "shelf", 1)
-matches = Object("Regular coated matches", True, "candle", 1)
-meterstick = Object("Wooden meterstick", True, "bed", 0)
-cup = Object("A ceramic cup. When you pick it up, you see a SHARD inside.", False, "N/A", 0)
-bowl = Object("A ceramic bowl. When you pick it up, you see it is empty.", False, "N/A", 0)
-vase = Object("A ceramic vase. When you pick it up, you see a GOLD KEY inside.", False, "N/A", 0)
-mug = Object("A ceramic mug. When you pick it up, you see it is empty.", False, "N/A", 0)
-book = Object("A bright red book. You open it and see that a hole has been cut into the pages. In the hole is a SHARD.", False, "N/A", 0)
-letters = Object("The first letter says: Jan. 2, 1902\nNathan,\nThe research is complete! I am beginning the testing phase tomorrow. \nIf it works, it will be the greatest possible birthday present.\nThe second letter (it's more of a memo) says: Don't forget your password is your birthday.", False, "N/A", 0)
+shard = Object("A red, glass-like shard\n", True, "door", 8)
+gold = Object("A small gold key\n", True, "chest", 1)
+silver = Object("A small silver key\n", True, "shelf", 1)
+matches = Object("Regular coated matches\n", True, "candle", 1)
+meterstick = Object("Wooden meterstick\n", True, "bed", 0)
+cup = Object("A ceramic cup. When you pick it up, you see a SHARD inside.\n", False, "N/A", 0)
+bowl = Object("A ceramic bowl. When you pick it up, you see it is empty.\n", False, "N/A", 0)
+vase = Object("A ceramic vase. When you pick it up, you see a GOLD KEY inside.\n", False, "N/A", 0)
+mug = Object("A ceramic mug. When you pick it up, you see it is empty.\n", False, "N/A", 0)
+book = Object("A bright red book. You open it and see that a hole has been cut into the pages. In the hole is a SHARD.\n", False, "N/A", 0)
+#letters no longer necessary because I got rid of the suitcase that would require the code to save time
+#letters = Object("The first letter says: Jan. 2, 1902\nNathan,\nThe research is complete! I am beginning the testing phase tomorrow. \nIf it works, it will be the greatest possible birthday present.\nThe second letter (it's more of a memo) says: Don't forget your password is your birthday.\n", False, "N/A", 0)
+
 
 #lists and dictionaries
 #for when the command input is completely invalid
 responses = ["Sorry, I don't understand that.", "That just so happens to be outside of my skill set.", "Excuse me?", "Do something else.", "Huh?", "Dude, that's not an option.", "Can't do that, sorry.", "Yeah, I'll go right ahead and do that for you! Just kidding.", "No.", "You're not the boss of me. Ugh.", "Can you...just maybe...make some sense?", "Oops! Sorry, I don't know how to do that!", "Maybe I can do that in the next curse update."]
-inventory = {"shard" : 1}
 #for when the command is valid, but it is not the intended use/not allowed (such as taking the skeleton or taking the door)
 responses2 = ["You really think you can do that?" , "Sorry, you can't do that." , "No." , "Do something else." , "You better not.", "I really don't think that'll work."]
+
+inventory = {"shard" : 1}
 #objects in each location
-#inv_bed = {"decoy": 1}
+inv_bed = {"decoy": 1}
 inv_nightstand = {"matches": 30, "silver" : 1}
-#inv_shelf = {"decoy": 1}
+inv_shelf = {"decoy": 1}
 inv_bookshelf = {"meterstick": 1}
 inv_desk = {"shard": 1}
-inv_cabinet = {"decoy": 1}
-inv_chest = {"decoy": 1}
+inv_cabinet = {"shard": 1, "gold" : 1}
+inv_chest = {"shard": 1}
+
+#unused = {}
+
 
 #long strings & other variables
 commands = """take <object> : takes object and puts it in the inventory, if possible
@@ -82,8 +89,8 @@ To the right of the desk, there is a tall BOOKSHELF that takes up the rest of th
 backwall ="""
 You are facing the back wall.
 There is a BED in the left corner, with the foot of the bed closer to you.
-Next to the bed, there is a small NIGHTSTAND, which has two drawers. On top of the nightstand, there is a candle, matches, and a weird box.
-On the right, you can still see the desk and that unsettling skeleton.
+Next to the bed, there is a small NIGHTSTAND, which has two drawers. You see a few items on top of it.
+On the right, you can still see the DESK and that unsettling skeleton.
 """
 
 rightwall ="""
@@ -97,6 +104,7 @@ Remember? This room is in a separate universe, with nothing else in it.
 location = "none"
 
 #writing descriptions for examine function
+#MCMII code no longer necessary because the box it was to be used for was taken out to save time
 shelf_p1 = """You approach the shelf. There is a jar that has a label reading 'MCMII'.
 Next to the jar is a silver box.
 """
@@ -171,7 +179,7 @@ def type_slow(str):
     for letter in str:
         sys.stdout.write(letter)
         sys.stdout.flush()
-        time.sleep(0.025)
+        time.sleep(0.015)
 
 #used for commands or inputs that don't exist
 def invalid():
@@ -191,7 +199,7 @@ def invalid2():
 def turn(direction, start):
     """turns to the next wall"""
     wall = start
-    if location == "none" :
+    if location == "none" or direction == "back":
         if direction == "left":
             wall += 1
         elif direction == "right":
@@ -224,15 +232,17 @@ def take(obj):
     """take object, if possible"""
     y = {"bookshelf" : inv_bookshelf , "bed" : inv_bed , "shelf" : inv_shelf , "cabinet" : inv_cabinet , "nightstand" : inv_nightstand , "desk" : inv_desk, "chest" : inv_chest}
     z = {"shard" : shard , "matches" : matches , "gold" : gold , "silver" : silver , "meterstick" : meterstick}
-    if z[obj].place == location and z[obj].keep == True and obj in y[location] and y[location][obj] >= 1:
+    if z[obj].keep == True and obj in y[location] and y[location][obj] >= 1:
         if obj in inventory:
             inventory[obj] += 1
         elif obj == "gold" :
             inventory["gold key"] = 1
+        elif obj == "silver" :
+            inventory["silver key"] = 1
         else:
             inventory[obj] = 1
-        x = y[obj]
-        inv_[x] -= 1
+        x = y[location]
+        x[obj] -= 1
         return f"{obj}2"
     else:
         invalid2()
@@ -273,11 +283,11 @@ def use(obj):
 #function used to approach location or look closely at objects
 def examine(obj):
     """provides description of object or brings character closer to object"""
-    z = {"shard" : shard , "matches" : matches , "gold key" : gold , "silver key" : silver , "meterstick" : meterstick, "cup" : cup , "bowl" : bowl , "vase" : vase , "mug" : mug , "letters" : letters, "book" : book}
-    if inspect.isclass(z[obj]) == True:
-        type_slow(obj.desc)
-        obj = f"{obj}1"
-        return obj
+    z = {"shard" : shard , "matches" : matches , "gold key" : gold , "silver key" : silver , "meterstick" : meterstick, "cup" : cup , "bowl" : bowl , "vase" : vase , "mug" : mug , "book" : book}
+    if obj in z:
+        type_slow(z[obj].desc)
+        obj2 = f"{obj}1"
+        return obj2
     elif obj == "door" :
         type_slow(door)
     elif obj == "shelf" :
@@ -300,7 +310,7 @@ def examine(obj):
 #prints inventory in a neat format
 def inv():
     """prints inventory"""
-    for k, v in inventory:
+    for k, v in inventory.items():
         print(f"{k} : {v}")
 
 #used to help player out if s/he forgets the commands or instructions
@@ -335,12 +345,12 @@ def command():
         elif res == "help":
             hlp()
         elif res == "back":
-            wall_int = turn("none", wall)
+            wall_int = turn("back", wall)
             return wall_int
         else:
             invalid()
 
-
+"""
 #title screen
 print(title)
 
@@ -372,7 +382,7 @@ type_slow("\nLet's get started:\n")
 
 #starts with player facing front of room
 type_slow(frontwall)
-
+"""
 #setup for the following while loop
 wall = 1
 game = command()
@@ -396,20 +406,22 @@ while True:
         location = game
         game = command()
     elif game == "meterstick" :
-        inv_bed = {"shard" : 1}
+        inv_bed["shard"] = 1
         bed = bed_p1
     elif game == "gold" :
         chest = chest_p1 + chest_p3
         inv_chest["shard"] = 1
     elif game == "silver" :
-        inv_shelf = {"shard" : 1}
+        inv_shelf["shard"] = 1
         shelf = shelf_p1 + shelf_p3
     elif game == "matches" :
         inv_nightstand["shard"] = 1
+    elif game == "cup1" :
+        inv_cabinet["shard"] = 1
     elif game == "book1" :
         inv_bookshelf["shard"] = 1
     elif game == "cup1" :
-        inv_cabinet["shard"] = 1
+        inventory["shard"] += 1
     elif game == "vase1" :
         inv_cabinet["gold"] = 1
     elif game == "meterstick2" :
@@ -424,3 +436,12 @@ while True:
 #previous loop only breaks when the "end" is returned by the command function, so it only reaches this line at the end of the game
 #"types" out the ending sequence (found at the top in "long strings and variables" section)
 type_slow(end)
+
+responses3 = ["Bye." , "Can you leave?" , "I can't go home until you leave, so can you do me a favor and close this tab?" , "There's a skeleton in this room. A real skeleton. Normal people would leave the first chance they get. Why aren't you one of them?" , "Why are you still here?" , "Game's over, get out." , "Go away." , "Just leave already!" , "Why aren't you leaving? Did I drop you off in the wrong spot or something?" , "Just close the tab, you won already." , "You know you can leave, right?" , "If you want to leave already, you should stop talking to me."]
+
+endv = input(">>> ")
+
+while True:
+    type_slow(random.choice(responses3))
+    print("\n")
+    endv = input(">>> ")
