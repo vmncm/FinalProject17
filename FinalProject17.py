@@ -44,7 +44,6 @@ inv_desk = {"shard": 1}
 inv_cabinet = {"shard": 1, "gold" : 1}
 inv_chest = {"shard": 1}
 
-#unused = {}
 
 
 #long strings & other variables
@@ -232,21 +231,24 @@ def take(obj):
     """take object, if possible"""
     y = {"bookshelf" : inv_bookshelf , "bed" : inv_bed , "shelf" : inv_shelf , "cabinet" : inv_cabinet , "nightstand" : inv_nightstand , "desk" : inv_desk, "chest" : inv_chest}
     z = {"shard" : shard , "matches" : matches , "gold" : gold , "silver" : silver , "meterstick" : meterstick}
-    if z[obj].keep == True and obj in y[location] and y[location][obj] >= 1:
-        if obj in inventory:
-            inventory[obj] += 1
-        elif obj == "gold" :
-            inventory["gold key"] = 1
-        elif obj == "silver" :
-            inventory["silver key"] = 1
-        else:
-            inventory[obj] = 1
-        x = y[location]
-        x[obj] -= 1
-        return f"{obj}2"
+    #global location
+    if location in y:
+        if z[obj].keep == True and obj in y[location] and y[location][obj] >= 1:
+            if obj in inventory:
+                inventory[obj] += 1
+            elif obj == "gold" :
+                inventory["gold key"] = 1
+            elif obj == "silver" :
+                inventory["silver key"] = 1
+            else:
+                inventory[obj] = 1
+            x = y[location]
+            x[obj] -= 1
+            return f"{obj}2"
+        #else:
+        #    invalid2()
     else:
         invalid2()
-
 #uses object only if it is in the inventory, if the current location is the right place to use it, and if the player has enough of the object to use
 #modifies inventory
 #after using the 8 shards, it should return "end", which will be recognized by final gameplay loop in order to end the game
@@ -263,7 +265,7 @@ def use(obj):
             elif obj == "matches" :
                 type_slow("You light the candle. As it melts, you see a SHARD inside the melted wax.\n(You can grab it without hurting yourself, don't worry.)")
             elif obj == "gold" :
-                type_slow("You unlock the chest. Inside, you see a suitCASE.")
+                type_slow("You unlock the chest. Inside, you see a SHARD.")
             elif obj == "silver" :
                 type_slow("You unlock the box. Inside, you see a SHARD.")
             else:
@@ -273,7 +275,7 @@ def use(obj):
             invalid2()
     else:
         type_slow(f"You don't have a(n) {obj}.")
-    if inventory[shard] == 0 :
+    if inventory["shard"] == 0 :
         x = "end"
         return x
     else:
@@ -350,7 +352,7 @@ def command():
         else:
             invalid()
 
-"""
+
 #title screen
 print(title)
 
@@ -382,7 +384,7 @@ type_slow("\nLet's get started:\n")
 
 #starts with player facing front of room
 type_slow(frontwall)
-"""
+
 #setup for the following while loop
 wall = 1
 game = command()
